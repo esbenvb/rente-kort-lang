@@ -1,0 +1,27 @@
+table {
+  border: 1px solid black;
+  border-collapse: collapse;
+  margin: 20px;
+  padding: 20px;
+}
+
+tr {
+  border-bottom: 1px solid gray;
+  margin: 15px;
+
+}
+
+td{
+  padding-left: 15px;
+}
+
+td.difference,
+td.year,
+td.quarter
+{
+  font-weight: bold;
+}
+
+body {
+  font-family: sans-serif;
+}
