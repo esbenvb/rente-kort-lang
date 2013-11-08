@@ -13,10 +13,20 @@ var data;
       data = jsondata;
       //console.log(data);
 
+      var quarters = 0;
+      var longSum = 0;
+      var shortSum = 0;
+      
       for (var y = startYear; data[y] !== undefined; y++) {
         for (var q = (y !== startYear) ? 1 : startQuarter; data[y][(q - 1) * 13 + 1] !== undefined && q < 5; q++) {
           var w = (q - 1) * 13 + 1;
+
           data[y][w].shortavg = calcFlex(y, q);
+
+          quarters++;
+          longSum += data[y][w].long;
+          shortSum += data[y][w].short;
+          
           //console.log([y, w]);
           //console.log(data[y][w].long);
           //console.log(calcFlex(y, q));
@@ -33,6 +43,21 @@ var data;
           $table.append($row);
         }
       }
+      
+      $row = $('<tr class="average"></tr>');
+      $row.append('<td>Gennemsnit</td>');
+      $row.append('<td></td>');
+      $row.append('<td></td>');
+      $row.append('<td>' + (shortSum/quarters).toPrecision(3) + '%</td>');
+      $row.append('<td></td>');
+      $row.append('<td>' + (longSum/quarters).toPrecision(3) + '%</td>');
+      $row.append('<td class="difference">' + ((longSum/quarters) - (shortSum/quarters)).toPrecision(3) + '</td>');
+      $row.append('<td class="difference-relative">' + (((shortSum/quarters)/(longSum/quarters)) * 100).toPrecision(2) + '%</td>');
+      //console.log($table.length);
+      $table.append($row);
+      
+      
+      
     });
 
     function calcFlex(year, quarter) {
