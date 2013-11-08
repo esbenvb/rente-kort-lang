@@ -1,18 +1,30 @@
-var data;
 (function($) {
   $(document).ready(function() {
     var startYear = 1997;
     var startQuarter = 4;
     var thisYear = 2013;
     var thisQuarter = 4;
+    var chartData = {
+      'categories': [],
+      'series': [{
+          'name': 'Lang',
+          'data': [],
+        },{
+          'name': 'Kort gennemsnit',
+          'data': [],
+        }, {
+          'name': 'Kort',
+          'data': [],
+        }
+      ]
+    };
+
     var $table = $('#interestdata');
     $('span.year').html(thisYear);
     $('span.quarter').html(thisQuarter);
-    //var data;
+    var data;
     $.getJSON('data.json', function(jsondata, status, request) {
       data = jsondata;
-      //console.log(data);
-
       var quarters = 0;
       var longSum = 0;
       var shortSum = 0;
@@ -26,10 +38,6 @@ var data;
           quarters++;
           longSum += data[y][w].long;
           shortSum += data[y][w].short;
-          
-          //console.log([y, w]);
-          //console.log(data[y][w].long);
-          //console.log(calcFlex(y, q));
           $row = $('<tr></tr>');
           $row.append('<td class="year">' + y + '</td>');
           $row.append('<td class="quarter">Q' + q + '</td>');
@@ -39,8 +47,12 @@ var data;
           $row.append('<td>' + data[y][w].long.toPrecision(3) + '%</td>');
           $row.append('<td class="difference">' + (data[y][w].long - data[y][w].shortavg).toPrecision(3) + '</td>');
           $row.append('<td class="difference-relative">' + ((data[y][w].shortavg/data[y][w].long) * 100).toPrecision(2) + '%</td>');
-          //console.log($table.length);
           $table.append($row);
+          chartData.categories.push(y + ' Q' + q);
+          chartData.series[0].data.push(data[y][w].long);
+          chartData.series[1].data.push(data[y][w].shortavg);
+          chartData.series[2].data.push(data[y][w].short);
+          
         }
       }
       
@@ -53,11 +65,41 @@ var data;
       $row.append('<td>' + (longSum/quarters).toPrecision(3) + '%</td>');
       $row.append('<td class="difference">' + ((longSum/quarters) - (shortSum/quarters)).toPrecision(3) + '</td>');
       $row.append('<td class="difference-relative">' + (((shortSum/quarters)/(longSum/quarters)) * 100).toPrecision(2) + '%</td>');
-      //console.log($table.length);
       $table.append($row);
-      
-      
-      
+
+      $('#container').highcharts({
+              title: {
+                  text: 'Renteudgift ved realkreditlån frem til i dag.',
+                  x: -20 //center
+              },
+              subtitle: {
+                  text: 'Kilde: realkreditraadet.dk',
+                  x: -20
+              },
+              xAxis: {
+                  categories: chartData.categories
+              },
+              yAxis: {
+                  title: {
+                      text: 'Rente %'
+                  },
+                  plotLines: [{
+                      value: 0,
+                      width: 1,
+                      color: '#808080'
+                  }]
+              },
+              tooltip: {
+                  valueSuffix: '%'
+              },
+              legend: {
+                  layout: 'vertical',
+                  align: 'right',
+                  verticalAlign: 'middle',
+                  borderWidth: 0
+              },
+              series: chartData.series
+          });
     });
 
     function calcFlex(year, quarter) {
@@ -69,6 +111,7 @@ var data;
         total += data[y][w].short;
       }
 
+      //console.log(year, quarter,rates.length, total,  total/rates.length, rates );
       return rates.length ? total/rates.length : 0;
     }
   });
