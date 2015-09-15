@@ -2,8 +2,8 @@
   $(document).ready(function() {
     var startYear = 1997;
     var startQuarter = 4;
-    var thisYear = 2013;
-    var thisQuarter = 4;
+    var thisYear = 2015;
+    var thisQuarter = 3;
     var chartData = {
       'categories': [],
       'series': [{
